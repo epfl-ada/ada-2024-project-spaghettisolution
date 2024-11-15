@@ -132,7 +132,12 @@ The dataset is not included in the git repository as it is too large. It should 
 
 Two external librairies are used in this project : StanfordcoreNLP and NLTK
 
-To install the first one, please download the Java version from [Stanford CoreNLP website](https://stanfordnlp.github.io/CoreNLP/). The folder should be placed in parallel of the repository of the code. 
+To install StanfordcoreNLP, please download the Java version from [Stanford CoreNLP website](https://stanfordnlp.github.io/CoreNLP/). The folder should be placed in parallel of the repository of the code. 
+You should have Java installed on your computer.
+
+Then execute the following command:
+   ```bash
+   pip install stanford-corenlp
 
 For NLTK:
 
