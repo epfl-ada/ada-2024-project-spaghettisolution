@@ -38,7 +38,6 @@ def tokenize_summaries(summaries: pd.DataFrame) -> list:
     Returns:
         list: tokens for text
     """
-    nltk.download()
     all_summaries = summaries["summary"].str.cat(sep=" ")
     return word_tokenize(all_summaries)
 
