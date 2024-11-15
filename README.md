@@ -126,7 +126,9 @@ Valentin Biselli: Processing and analysis of summaries data
 
 Nils Antonovitch: Writing the story, creation of the web page
 
-## Instructions for externals librairies 
+## Instructions for external libraries and the dataset
+
+The dataset is not included in the git repository as it is too large. It should be downloaded from https://www.cs.cmu.edu/~ark/personas/ . It should be placed in the `data/raw_data` folder of the repository.
 
 Two external librairies are used in this project : StanfordcoreNLP and NLTK
 
