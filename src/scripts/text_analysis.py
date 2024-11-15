@@ -92,7 +92,7 @@ def identify_personas(filename: str):
     Args:
         filename (str): file with the summary
     """
-    nlp = StanfordCoreNLP(r"./stanford-corenlp-4.5.7")
+    nlp = StanfordCoreNLP(r"../stanford-corenlp-4.5.7/stanford-corenlp-4.5.7")
     with open(filename, "r") as file:
         sentence = file.read().strip()
     named_entities = nlp.ner(sentence)
@@ -119,7 +119,7 @@ def extract_entities_and_adjectives(text: str) -> dict:
     Returns:
         dict: personas and the associated adjectives
     """
-    nlp = StanfordCoreNLP(r"./stanford-corenlp-4.5.7")
+    nlp = StanfordCoreNLP(r"../stanford-corenlp-4.5.7/stanford-corenlp-4.5.7")
     # Annotate the text using CoreNLP
     annotated_text = nlp.annotate(
         text,
@@ -162,8 +162,7 @@ def extract_entities_and_adjectives(text: str) -> dict:
     if entities_adjectives:
         for entity, adj_list in entities_adjectives.items():
             print(f"Entity: {entity}, Adjectives: {', '.join(adj_list)}")
-        else:
-            print("No entities with adjectives found.")
+        
 
     return entities
 
@@ -177,7 +176,7 @@ def extract_entities_and_verbs(text):
     Returns:
         dict: personas and their associated verbs
     """
-    nlp = StanfordCoreNLP(r"./stanford-corenlp-4.5.7")
+    nlp = StanfordCoreNLP(r"../stanford-corenlp-4.5.7/stanford-corenlp-4.5.7")
     # Annotate the text using CoreNLP
     annotated_text = nlp.annotate(
         text,
@@ -262,7 +261,7 @@ def split_text_into_chunks(text, max_length=1000):
 
 def retry_request(text, retries=3, delay=5):
     # Retry function in case of timeout
-    nlp = StanfordCoreNLP(r"./stanford-corenlp-4.5.7")
+    nlp = StanfordCoreNLP(r"../stanford-corenlp-4.5.7/stanford-corenlp-4.5.7")
 
     for attempt in range(retries):
         try:
@@ -285,7 +284,7 @@ def retry_request(text, retries=3, delay=5):
 
 
 def extract_entity_sentiments_intermediate(text):
-    nlp = StanfordCoreNLP(r"./stanford-corenlp-4.5.7")
+    nlp = StanfordCoreNLP(r"../stanford-corenlp-4.5.7/stanford-corenlp-4.5.7")
     # Annotate the text using CoreNLP
     annotated_json = retry_request(text)
     if annotated_json is None:
