@@ -317,7 +317,11 @@ def merge_dates_column(collab_date_df, time_bin = 10, country_list = country_lis
     nbr_dates= len(collab_date_df.columns)
     date_index = 0
     begin_date_index = date_index
-    for i in range(nbr_dates//time_bin): #iteration entre bin
+    if nbr_dates%time_bin == 0:
+        nbr_bins = nbr_dates//time_bin -1
+    else:
+        nbr_bins = nbr_dates//time_bin
+    for i in range(nbr_bins): #iteration entre bin
         current_sum = 0
         for j in range(time_bin): #iteration dans le bin
             # perform the sum within the bin
@@ -333,7 +337,11 @@ def merge_dates_column(collab_date_df, time_bin = 10, country_list = country_lis
 
     #for the last date 
     current_sum = 0
-    for i in range(nbr_dates%time_bin):
+    if nbr_dates%time_bin == 0:
+        nbr_dates_last_bin = time_bin
+    else:
+        nbr_dates_last_bin = nbr_dates%time_bin
+    for i in range(nbr_dates_last_bin):
         current_sum += collab_date_df.iloc[:,date_index]
         date_index += 1
 
@@ -341,7 +349,10 @@ def merge_dates_column(collab_date_df, time_bin = 10, country_list = country_lis
     end_date_index = date_index -1 
     column_name = f'[{collab_date_df.columns[begin_date_index]} - {collab_date_df.columns[end_date_index]}]'
     merge_collab_date_df[column_name] = current_sum.values
-    return merge_collab_date_df.loc[country_list, :]
+    if isinstance(country_list, list):
+        return merge_collab_date_df.loc[country_list, :]
+    else:
+        return merge_collab_date_df
 
 # build heatmap to see better the results by normalizing also each row
 def normelize_collab_USA_heatmap(merge_collab_date_df):
@@ -353,3 +364,319 @@ def normelize_collab_USA_heatmap(merge_collab_date_df):
     plt.xlabel("Released Date")
     plt.xticks(rotation = 90)
     plt.ylabel("Collaborators")
+
+def plot_heat_map( table_df, title, ylabel, xlabel = 'Released Date', rotation = 90, normelize_mapping = True, cbar_label = 'Normalized # Movies', figsize=(7, 7)):
+    if normelize_mapping:
+        mapping_df = table_df.div(table_df.sum(axis=1), axis=0)
+    else:
+        mapping_df = table_df
+
+    plt.figure(figsize=figsize)
+    sns.heatmap(mapping_df, fmt= '.0f', annot = table_df, cbar_kws={'label': cbar_label})
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.xticks(rotation = rotation)
+    plt.ylabel(ylabel)
+
+def plot_genres_heat_map(dominent_genre_date_df):
+        genre_date_cross_df = pd.crosstab(dominent_genre_date_df['genres'], dominent_genre_date_df['release_date']) # time is already continious
+
+        # regroup released_date to make the table more concise
+        merge_genre_date_df= merge_dates_column(genre_date_cross_df, time_bin=10, country_list= None)
+        
+
+        plot_heat_map(table_df= merge_genre_date_df,
+                      title= 'Distribution of mains genres per Released Date',
+                      ylabel= 'Main Genres',
+                      figsize= (8.5,7))
+        
+def cross_tab_cont_time(df, column1, column2, filtered_column = None, filter= None):
+    
+    # get distribution movies over time and by collaboration 
+    cross_df= pd.crosstab(df[column1], df[column2])
+
+    # lets make the date continious (in year)
+    discont_date = cross_df.columns
+    #create a similar df but with continous dates and fill this table with NaN
+    continous_dates = np.arange(discont_date[0], discont_date[-1] + 1)
+    cont_cross_df = pd.DataFrame( index= cross_df.index, columns= continous_dates )
+    cont_cross_df.columns.name = 'release_date'
+
+    #combine this two dataframes and replace NaN by zero
+    cross_df = cross_df.combine_first(cont_cross_df)
+    cross_df.fillna(0, inplace= True)
+    cross_df = cross_df.astype(int)
+    
+    return cross_df
+
+def filter_date(df):
+    date_df= df[~ df['release_date'].isna()]
+    date_df['release_date'] =date_df['release_date'].astype(int)
+    return date_df
+
+
+
+def plot_spec_genres_heat_map(df):
+    # make a cross table 
+    cross_df = cross_tab_cont_time(df, 'genres', 'release_date')
+
+    # regroup released_date to make the table more concise
+    merge_cross_df= merge_dates_column(cross_df, time_bin=10, country_list= None)
+
+
+    plot_heat_map(table_df= merge_cross_df,
+                      title= 'Distribution of Specific Genres per Released Date',
+                      ylabel= 'Main Genres',
+                      figsize= (8.5,7))
+    
+
+# Action: distribution of film realized over time 
+def hist_sub_plot(df, x, filtered_column, filter, title = None, weights = None):
+    if isinstance(filter, str):
+        filter_df= df[df[filtered_column] == filter]
+        title = filter
+    elif isinstance(filter, list):
+        filter_df =  list_filter(df, filtered_column, filter)
+        title = title
+
+    #plot
+    sns.histplot(x = x, data= filter_df, weights = weights, binwidth =5 ); 
+    plt.xticks(rotation = 90)
+    plt.title(title)
+    plt.xlabel("")
+    plt.ylabel("")
+
+
+def hist_dom_genres_plots(df):
+    fig = plt.figure(figsize=(15, 10.4))
+    fig.suptitle('Distribution of movies realesed per dominent genres over time', size = 'x-large', y =0.95)
+    fig.supylabel('# Movies Released', x = 0.05)
+    fig.supxlabel('Released Date')
+
+    plt.subplot(2,3,1)
+    # Action: distribution of film realized over time
+    hist_sub_plot(df,'release_date', 'genres', 'Action' ) 
+
+
+    plt.subplot(2,3,2)
+    # Black and white: distribution of film realized over time
+    hist_sub_plot(df,'release_date', 'genres', 'Black-and-white' ) 
+
+    plt.subplot(2,3,3)
+    # World Cinmea: distribution of film realized over time
+    hist_sub_plot(df,'release_date', 'genres', 'World cinema' ) 
+
+    plt.subplot(2,3,4)
+    #Drama: distribution of film realized over time
+    hist_sub_plot(df,'release_date', 'genres', 'Drama' ) 
+
+    plt.subplot(2,3,5)
+    # Crime Fiction: distribution of film realized over time
+    hist_sub_plot(df,'release_date', 'genres', 'Crime Fiction' ) 
+
+
+    plt.subplot(2,3,6)
+    # Short Film: distribution of film realized over time 
+    hist_sub_plot(df,'release_date', 'genres', 'Short Film' ) 
+
+
+
+def hist_spec_genres_plots(df):
+    fig = plt.figure(figsize=(15, 10.4))
+    fig.suptitle('Distribution of movies realesed per specific genres over time', size = 'x-large', y =0.95)
+    fig.supylabel('# Movies Released', x = 0.05)
+    fig.supxlabel('Released Date')
+
+    plt.subplot(2,3,1)
+    # 'Anti-war: distribution of film realized over time
+    hist_sub_plot(df,'release_date', 'genres', 'Anti-war' ) 
+
+
+    plt.subplot(2,3,2)
+    # Documentary: distribution of film realized over time
+    hist_sub_plot(df,'release_date', 'genres', 'Documentary' ) 
+
+    plt.subplot(2,3,3)
+    # Political drama: distribution of film realized over time
+    hist_sub_plot(df,'release_date', 'genres', 'Political drama' ) 
+
+    plt.subplot(2,3,4)
+    #Political cinema: distribution of film realized over time
+    hist_sub_plot(df,'release_date', 'genres', 'Political cinema' ) 
+
+    plt.subplot(2,3,5)
+    # Political satire: distribution of film realized over time
+    hist_sub_plot(df,'release_date', 'genres', 'Political satire' ) 
+
+
+    plt.subplot(2,3,6)
+    # Political thriller: distribution of film realized over time 
+    hist_sub_plot(df,'release_date', 'genres', 'Political thriller' ) 
+
+
+def hist_gen_event_date_plots(df):
+    fig = plt.figure(figsize=(15, 10.4))
+    fig.suptitle('Movie Distribution by Release Date and Country with War/Politics Themes', size = 'x-large', y =0.95)
+    fig.supylabel('# Movies Released', x = 0.05)
+    fig.supxlabel('Released Date')
+
+    plt.subplot(2,3,1)
+    # Germany: distribution of film realized over time with War/Plotics Themes
+    hist_sub_plot(df, 'release_date', 'country', 'Germany')
+
+    plt.subplot(2,3,2)
+    # United States of America: distribution of film realized over time with War/Plotics Themes
+    hist_sub_plot(df, 'release_date', 'country', 'United States of America')
+
+    plt.subplot(2,3,3)
+    # France: distribution of film realized over time with War/Plotics Themes
+    hist_sub_plot(df, 'release_date', 'country', 'France')
+
+    plt.subplot(2,3,4)
+    # United Kingdom: distribution of film realized over time with War/Plotics Themes
+    hist_sub_plot(df, 'release_date', 'country', 'United Kingdom') 
+
+    plt.subplot(2,3,5)
+    # German Democratic Republic: distribution of film realized over time with War/Plotics Themes
+    hist_sub_plot(df, 'release_date', 'country', 'German Democratic Republic')
+
+
+    plt.subplot(2,3,6)
+    # Russia: distribution of film realized over time with War/Plotics Themes
+    hist_sub_plot(df, 'release_date', 'country', 'Russia')
+
+
+def plot_gen_event_date_country_heatmap(df):
+    # make cross table 
+    cross_df =cross_tab_cont_time(df, 'country', 'release_date')
+
+    # regroup released_date to make the table more concise
+    merge_cross_df= merge_dates_column(cross_df, time_bin=10, country_list= ['Germany', 'United States of America','France', 'United Kingdom', 'German Democratic Republic', 'Russia',  'Soviet Union', 'West Germany', 'Weimar Republic' ] )
+    plot_heat_map(table_df= merge_cross_df,
+                      title= 'Movie Distribution by Release Date and Country with War/Politics Themes',
+                      ylabel= 'Country',
+                      figsize= (8.5,7))
+    
+
+def list_filter(df, filtered_column, list_items):
+    # transform this list into a regular expression
+    list_re = '|'.join(list_items)
+
+    # filter dataframe to obtain only movies that have one of this word in the plot 
+    filtered_df = df[df[filtered_column].str.contains(list_re, case= False, regex= True)]
+    return filtered_df
+
+# def ww2_filter(df):
+#     # considler only movies related to ww2
+#     ww2_df = list_filter(df, ['world war II', 'world war 2', 'nazis', 'allied forces', 'axis power', 'Holocaust', 'gestapo', 'pearl harbor', 'Concentration camps', 'third Reich', 'hitler'])
+#     return ww2_df
+
+
+def hist_event_USA_plots(df):
+    USA_df = df[df['country'] == 'United States of America' ]
+    fig = plt.figure(figsize=(15, 10.4))
+    fig.suptitle('USA Movie Distribution by Release Date with Different Topics', size = 'x-large', y =0.95)
+    fig.supylabel('# Movies Released', x = 0.05)
+    fig.supxlabel('Released Date')
+
+    plt.subplot(2,3,1)
+    # 'ww2: distribution of film realized over time
+    hist_sub_plot(USA_df,'release_date', 'plot', ['world war II', 'world war 2', 'nazis', 'allied forces', 'axis power', 'Holocaust', 'gestapo', 'pearl harbor', 'Concentration camp', 'third Reich', 'hitler'], 'world War II' ) 
+
+    plt.subplot(2,3,2)
+    # Civil rights movements : distribution of film realized over time
+    hist_sub_plot(USA_df,'release_date', 'plot', ['Malcom X', 'Rosa Parks', 'Martin Luther', 'Stokely Carmichael', 'March on Washington', 'Montgomery Bus ', 'Birmingham Campaign',  'Civil Rights','Voting Rights Act of 1965', 'NAACP', 'SCLC', 'National Association for the Advancement of Colored People', 'Southern Christian Leadership Conference', 'black panthers', 'Segregation', 'Racial equality', 'Human rights', 'Jim Crow laws'], 'Civil Rights Movements')
+
+    plt.subplot(2,3,3)
+    #Vietnam war: distribution of film realized over time
+    hist_sub_plot(USA_df,'release_date', 'plot', ['Vietnam War', 'Vietnam', 'Viet', 'Cong', 'Vietnamization', 'fall off Saigon', 'Mekong Delta'], 'Vietnam War')
+
+    plt.subplot(2,3,4)
+    #Cold war: distribution of film realized over time
+    hist_sub_plot(USA_df,'release_date', 'plot',['Cold war', 'Iron Curtain', 'Arms Race', 'Space race', 'proxy wars', 'Berlin wall'], 'Cold War')
+
+    plt.subplot(2,3,5)
+    # Internet and digital culture: distribution of film realized over time
+    hist_sub_plot(USA_df,'release_date', 'plot', ['internet', 'digital culture', 'social media', 'Cybersecurity', 'Artificial Intelligence', 'Streaming', 'IA'], 'Internet/Digital Culture')
+
+
+    plt.subplot(2,3,6)
+    # 11/09/01 : distribution of film realized over time 
+    hist_sub_plot(USA_df,'release_date', 'plot', ['twin towers', 'world trade center', 'al-qaeda', 'terrorism', 'September 11', 'flight 93'], 'September 11')
+
+def filter_per_country(df):
+    country_df = df.copy(deep=True)
+    country_df.dropna(subset= ['country'], inplace= True)
+    country_df['country'] = country_df['country'].str.split(', ')
+    country_df = country_df.explode('country')
+    return country_df
+
+def filter_per_plot_date(df):
+    plot_date_df = df.copy(deep= True)
+    plot_date_df.dropna(subset= ['plot'], inplace= True)
+    plot_date_df.dropna(subset= ['release_date'], inplace= True)
+    return plot_date_df
+
+
+def hist_gen_event_date_plot(df):
+    general_event_list = ['politic', 'war', 'revolution', 'Propaganda', 'Ideology', 'Military' ]
+
+    # filter dataframe to obtain only movies that have one of this word in the plot 
+    gen_event_date_df = list_filter(df, 'plot',general_event_list)
+
+
+    # distribution over time
+    sns.histplot(x = 'release_date', data= gen_event_date_df); 
+    plt.xticks(rotation = 90)
+    plt.title('Distribution of Movies per release date containing words relative to war and politic in plot')
+    plt.xlabel("Released Date")
+    plt.ylabel("# Movie Released Date")
+
+    return gen_event_date_df
+
+
+
+def dist_spec_genre_plot(genre_df):
+    
+    specific_genre = ['Anti-war','Documentary', 'Political drama','Political cinema', 'Political thriller', 'Political satire', 'Political Documetary', 'Dystopia']
+    specific_genre_df = genre_df[genre_df['genres'].isin(specific_genre)]
+
+    # plot distribution 
+    dist_specific_genre = specific_genre_df['genres'].value_counts()
+    
+    plt.figure(figsize=(15, 5))
+    sns.barplot(x= dist_specific_genre.index, y= dist_specific_genre.values)
+    plt.xticks(rotation = 90)
+    plt.title("Specific Genres Movies")
+    plt.xlabel("Genres")
+    plt.ylabel(" # movies released")
+    return specific_genre_df
+
+def dist_dom_genre_plot(movies_clean_df, threshold =10):
+    genre_df = movies_clean_df.copy(deep= True)
+
+    # drop na value in columns genres and release_date 
+    genre_df.dropna(subset= ['genres'], inplace = True)
+
+    # transform unique str into list of strings in column 'genres'
+    genre_df['genres'] = genre_df['genres'].str.split(', ')
+
+    # explode genre column 
+    genre_df = genre_df.explode('genres')
+
+    # there is a lot of different genre, let's consider only the most dominents 
+    threshold = threshold
+    dominent_genre = genre_df['genres'].value_counts().index[:threshold]
+    dominent_genre_df = genre_df[genre_df['genres'].isin(dominent_genre)]
+
+    # plot distribution 
+    dist_dominent_genre = dominent_genre_df['genres'].value_counts()
+    
+    plt.figure(figsize=(15, 5))
+    sns.barplot(x= dist_dominent_genre.index, y= dist_dominent_genre.values)
+    plt.xticks(rotation = 90)
+    plt.title("Main genres Movies")
+    plt.xlabel("genres")
+    plt.ylabel(" # movies released")
+
+    return dominent_genre_df, genre_df
