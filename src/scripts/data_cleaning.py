@@ -81,6 +81,9 @@ def clean_movies_df(movies_df, plots_df):
     movies_clean_df["release_date"] = pd.to_numeric(
         movies_clean_df["release_date"], errors="coerce", downcast="integer"
     )  # it stil convert into float...
+
+    # fix the date of the film loc[29666067] "Hunting Season"
+    movies_clean_df.loc[29666067,'release_date'] = 2010.0
     return movies_clean_df
 
 
