@@ -447,7 +447,11 @@ def hist_sub_plot(df, x, filtered_column, filter, title = None, weights = None):
     plt.ylabel("")
 
 
-def hist_dom_genres_plots(df):
+def hist_dom_genres_plots(df, normelized = False):
+    if normelized:
+        # add a column weight for the normalization plot ########## mettre la fonction add_weitgh et juste appelé les weight après dasn hist_subplot
+        df
+
     fig = plt.figure(figsize=(15, 10.4))
     fig.suptitle('Distribution of movies realesed per dominent genres over time', size = 'x-large', y =0.95)
     fig.supylabel('# Movies Released', x = 0.05)
@@ -537,8 +541,8 @@ def hist_gen_event_date_plots(df):
     hist_sub_plot(df, 'release_date', 'country', 'United Kingdom') 
 
     plt.subplot(2,3,5)
-    # German Democratic Republic: distribution of film realized over time with War/Plotics Themes
-    hist_sub_plot(df, 'release_date', 'country', 'German Democratic Republic')
+    # Italie: distribution of film realized over time with War/Plotics Themes
+    hist_sub_plot(df, 'release_date', 'country', 'Italy')
 
 
     plt.subplot(2,3,6)
@@ -551,7 +555,7 @@ def plot_gen_event_date_country_heatmap(df):
     cross_df =cross_tab_cont_time(df, 'country', 'release_date')
 
     # regroup released_date to make the table more concise
-    merge_cross_df= merge_dates_column(cross_df, time_bin=10, country_list= ['Germany', 'United States of America','France', 'United Kingdom', 'German Democratic Republic', 'Russia',  'Soviet Union', 'West Germany', 'Weimar Republic' ] )
+    merge_cross_df= merge_dates_column(cross_df, time_bin=10, country_list= ['Germany', 'United States of America','Italy', 'United Kingdom', 'German Democratic Republic', 'Russia',  'Soviet Union', 'West Germany', 'Weimar Republic' ] )
     plot_heat_map(table_df= merge_cross_df,
                       title= 'Movie Distribution by Release Date and Country with War/Politics Themes',
                       ylabel= 'Country',
@@ -573,7 +577,9 @@ def list_filter(df, filtered_column, list_items):
 
 
 def hist_event_USA_plots(df):
-    USA_df = df[df['country'] == 'United States of America' ]
+    # filter to obtain only movies with USA
+    country_df = df.dropna(subset= ['country'], inplace = False)
+    USA_df= country_df[country_df['country'].apply(lambda x: 'United States of America' in x)]
     fig = plt.figure(figsize=(15, 10.4))
     fig.suptitle('USA Movie Distribution by Release Date with Different Topics', size = 'x-large', y =0.95)
     fig.supylabel('# Movies Released', x = 0.05)
@@ -774,31 +780,29 @@ def hist_social_event_date_plots(event_date_df):
     # hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'Soviet Union') 
 
 
-def hist_USA_regrouped_genre_date_plot(genre_df):
+def hist_USA_regrouped_genre_date_plot(event_date_df):
     #remove film with no country
-    genre_df.dropna(subset= ['country'], inplace = True)
+    event_date_df.dropna(subset= ['country'], inplace = True)
     # keep only movies that are made by USA
-    USA_genre_df= genre_df[genre_df['country'].apply(lambda x: 'United States of America' in x)]
-    # keep only movies that have a release date 
-    USA_genre_date_df = filter_date(USA_genre_df)
-    war_genre = ["War film", "Political drama", "Political cinema", "Political thriller", "Anti-war", "Anti-war film", "Propaganda film", "Combat Films", "Cold War", "Gulf War", "Patriotic film"]
-    social_genre = ["LGBT", "Gay Themed", "Feminist Film", "Social problem film", "Historical drama", "Gay Interest", "Social issues", 'Law & Crime']
-    economic_genre =  ["Business", "Finance & Investing"]
+    USA_event_date_df= event_date_df[event_date_df['country'].apply(lambda x: 'United States of America' in x)]
+    
+    war_theme = ["War", "Political", "Anti-war", 'politic', 'war', 'revolution', 'Propaganda', 'Ideology', 'Military']
+    social_theme = ["LGBT", "Gay", "Feminist", "Social problem", "Gay Interest", "Social issues", 'Law & Crime', 'racist',  'rights', 'oppression', 'protest', 'equality', 'revolution']
+    economic_theme =  ["Business", "Finance", "Investing",  'poverty', 'survival', 'crisis', 'jobless','wealth']
 
-    USA_war_genre_date_df = USA_genre_date_df[USA_genre_date_df['genres'].isin(war_genre)]
-    USA_social_genre_date_df = USA_genre_date_df[USA_genre_date_df['genres'].isin(social_genre)]
-    USA_economic_genre_date_df = USA_genre_date_df[USA_genre_date_df['genres'].isin(economic_genre)]
-
+    USA_war_date_df = list_filter(USA_event_date_df, 'plot',war_theme)
+    USA_social__date_df = list_filter(USA_event_date_df, 'plot',social_theme)
+    USA_economic__date_df = list_filter(USA_event_date_df, 'plot',economic_theme)
 
     # plot distribution 
     fig = plt.figure(figsize=(15, 6))
-    fig.suptitle('USA Movie Distribution by Release Date and by Genre', size = 'x-large', y =0.95)
+    fig.suptitle('USA Movie Distribution by Release Date and Thematic', size = 'x-large', y =0.95)
     fig.supylabel('# Movies Released', x = 0.05)
     fig.supxlabel('Released Date')
 
     # war/politic plot
     plt.subplot(1,3,1)
-    sns.histplot(x = 'release_date', data= USA_war_genre_date_df, weights = None, binwidth =5 ); 
+    sns.histplot(x = 'release_date', data= USA_war_date_df, weights = None, binwidth =5 ); 
     plt.xticks(rotation = 90)
     plt.title('War/Politics')
     plt.xlabel("")
@@ -806,7 +810,7 @@ def hist_USA_regrouped_genre_date_plot(genre_df):
 
     # Social Changes plot
     plt.subplot(1,3,2)
-    sns.histplot(x = 'release_date', data= USA_social_genre_date_df, weights = None, binwidth =5 ); 
+    sns.histplot(x = 'release_date', data= USA_social__date_df, weights = None, binwidth =5 ); 
     plt.xticks(rotation = 90)
     plt.title('Social Changes')
     plt.xlabel("")
@@ -814,8 +818,15 @@ def hist_USA_regrouped_genre_date_plot(genre_df):
 
     # Economic struggle plot
     plt.subplot(1,3,3)
-    sns.histplot(x = 'release_date', data= USA_economic_genre_date_df, weights = None, binwidth =5 ); 
+    sns.histplot(x = 'release_date', data= USA_economic__date_df, weights = None, binwidth =5 ); 
     plt.xticks(rotation = 90)
     plt.title('Economic Struggle')
     plt.xlabel("")
     plt.ylabel("")
+
+
+def add_weight(df, column_weighted):
+    dict_weight = df[column_weighted].value_counts().to_dict()
+    dict_inv_weight = {key: 1/value for key, value in dict_weight.items()}
+    df['weight'] = df['release_date'].map(dict_inv_weight)
+    return df
