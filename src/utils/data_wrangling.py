@@ -596,8 +596,8 @@ def hist_event_USA_plots(df):
     hist_sub_plot(USA_df,'release_date', 'plot',['Cold war', 'Iron Curtain', 'Arms Race', 'Space race', 'proxy wars', 'Berlin wall'], 'Cold War')
 
     plt.subplot(2,3,5)
-    # Internet and digital culture: distribution of film realized over time
-    hist_sub_plot(USA_df,'release_date', 'plot', ['internet', 'digital culture', 'social media', 'Cybersecurity', 'Artificial Intelligence', 'Streaming', 'IA'], 'Internet/Digital Culture')
+    # Financial Crisis (2008): distribution of film realized over time
+    hist_sub_plot(USA_df,'release_date', 'plot', ["Financial Crisis 2008" "Subprime Mortgages", "Lehman Brothers", "Mortgage-Backed Securities","MBS", "Toxic Assets", "Bailout", "Financial Meltdown", "Foreclosure", "Bankruptcy", "Economic Recession"], 'Financial Crisis (2008)')
 
 
     plt.subplot(2,3,6)
@@ -680,3 +680,142 @@ def dist_dom_genre_plot(movies_clean_df, threshold =10):
     plt.ylabel(" # movies released")
 
     return dominent_genre_df, genre_df
+
+def hist_economic_event_date_plots(event_date_df):
+
+    # filter to take only movies that containes econmics related words in the plot
+    economic_event_list = ["Unemployment", "Recession", "Foreclosure", "Bankruptcy", "Debt", "Poverty", "Layoff", "Financial crisis", "Economic collapse"]
+        # filter dataframe to obtain only movies that have one of this words in the plot 
+    economic_event_date_df = list_filter(event_date_df, 'plot',economic_event_list)
+
+
+    # remove None and explode column country 
+    economic_country_event_date_df = economic_event_date_df[~ economic_event_date_df['country'].isna()]
+    economic_country_event_date_df['country'] = economic_country_event_date_df['country'].str.split(', ')
+    economic_country_event_date_df = economic_country_event_date_df.explode('country')
+
+    fig = plt.figure(figsize=(15, 10.4))
+    fig.suptitle('Movie Distribution by Release Date and Country with Economic Struggle Theme', size = 'x-large', y =0.95)
+    fig.supylabel('# Movies Released', x = 0.05)
+    fig.supxlabel('Released Date')
+
+    plt.subplot(2,3,1)
+    # Germany: distribution of film realized over time with economic Themes
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'Germany')
+
+    plt.subplot(2,3,2)
+    # United States of America: distribution of film realized over time with economic Themes
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'United States of America')
+
+    plt.subplot(2,3,3)
+    # France: distribution of film realized over time with economic Themes
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'France')
+
+    plt.subplot(2,3,4)
+    # United Kingdom: distribution of film realized over time with economic Themes
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'United Kingdom') 
+
+    plt.subplot(2,3,5)
+    # Italy: distribution of film realized over time with economic Themes
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'Italy')
+
+
+    plt.subplot(2,3,6)
+    # Japan: distribution of film realized over time with economic Themes
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'Japan')
+
+
+def hist_social_event_date_plots(event_date_df):
+
+    # filter to take only movies that containes econmics related words in the plot
+    social_event_list = ["rights", "oppression", "protest", "equality", "revolution", "racism", "activis", "civil rights", "discrimination", 'reform', 'social justice'," Feminism", 'feminist',  "Racism",'racist', "Homophobia",'homophobic', "Gender Equality", "Sexism", 'sexist', "Intersectionality", "LGBTQ+","LGBT", 'coming out', 'hate crime', 'misogyny', 'hatred of women', 'misogynist', 'sexual harassment', 'rape','raped', 'rapist', 'Segregation', 'Antisemitism','Anti-semitism','anti-semitic', 'antisemitic', 'jewish', 'black people']  
+        # filter dataframe to obtain only movies that have one of this words in the plot 
+    social_event_date_df = list_filter(event_date_df, 'plot',social_event_list)
+
+
+    # remove None and explode column country 
+    social_country_event_date_df = social_event_date_df[~ social_event_date_df['country'].isna()]
+    social_country_event_date_df['country'] = social_country_event_date_df['country'].str.split(', ')
+    social_country_event_date_df = social_country_event_date_df.explode('country')
+
+    fig = plt.figure(figsize=(15, 10.4))
+    fig.suptitle('Movie Distribution by Release Date and Country with Social Changes Theme', size = 'x-large', y =0.95)
+    fig.supylabel('# Movies Released', x = 0.05)
+    fig.supxlabel('Released Date')
+
+    plt.subplot(2,3,1)
+    # Germany: distribution of film realized over time with social Themes
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'Germany')
+
+    plt.subplot(2,3,2)
+    # United States of America: distribution of film realized over time with social Themes
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'United States of America')
+
+    plt.subplot(2,3,3)
+    # France: distribution of film realized over time with social Themes
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'France')
+
+    plt.subplot(2,3,4)
+    # United Kingdom: distribution of film realized over time with social Themes
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'United Kingdom') 
+
+    plt.subplot(2,3,5)
+    # Italy: distribution of film realized over time with social Themes
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'Italy')
+
+
+    plt.subplot(2,3,6)
+    # West Germany: distribution of film realized over time with social Themes
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'West Germany')
+
+    # est aussi pas mal 
+    # plt.subplot(2,3,6)
+    # # West Germany: distribution of film realized over time with social Themes
+    # hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'Soviet Union') 
+
+
+def hist_USA_regrouped_genre_date_plot(genre_df):
+    #remove film with no country
+    genre_df.dropna(subset= ['country'], inplace = True)
+    # keep only movies that are made by USA
+    USA_genre_df= genre_df[genre_df['country'].apply(lambda x: 'United States of America' in x)]
+    # keep only movies that have a release date 
+    USA_genre_date_df = filter_date(USA_genre_df)
+    war_genre = ["War film", "Political drama", "Political cinema", "Political thriller", "Anti-war", "Anti-war film", "Propaganda film", "Combat Films", "Cold War", "Gulf War", "Patriotic film"]
+    social_genre = ["LGBT", "Gay Themed", "Feminist Film", "Social problem film", "Historical drama", "Gay Interest", "Social issues", 'Law & Crime']
+    economic_genre =  ["Business", "Finance & Investing"]
+
+    USA_war_genre_date_df = USA_genre_date_df[USA_genre_date_df['genres'].isin(war_genre)]
+    USA_social_genre_date_df = USA_genre_date_df[USA_genre_date_df['genres'].isin(social_genre)]
+    USA_economic_genre_date_df = USA_genre_date_df[USA_genre_date_df['genres'].isin(economic_genre)]
+
+
+    # plot distribution 
+    fig = plt.figure(figsize=(15, 6))
+    fig.suptitle('USA Movie Distribution by Release Date and by Genre', size = 'x-large', y =0.95)
+    fig.supylabel('# Movies Released', x = 0.05)
+    fig.supxlabel('Released Date')
+
+    # war/politic plot
+    plt.subplot(1,3,1)
+    sns.histplot(x = 'release_date', data= USA_war_genre_date_df, weights = None, binwidth =5 ); 
+    plt.xticks(rotation = 90)
+    plt.title('War/Politics')
+    plt.xlabel("")
+    plt.ylabel("")
+
+    # Social Changes plot
+    plt.subplot(1,3,2)
+    sns.histplot(x = 'release_date', data= USA_social_genre_date_df, weights = None, binwidth =5 ); 
+    plt.xticks(rotation = 90)
+    plt.title('Social Changes')
+    plt.xlabel("")
+    plt.ylabel("")
+
+    # Economic struggle plot
+    plt.subplot(1,3,3)
+    sns.histplot(x = 'release_date', data= USA_economic_genre_date_df, weights = None, binwidth =5 ); 
+    plt.xticks(rotation = 90)
+    plt.title('Economic Struggle')
+    plt.xlabel("")
+    plt.ylabel("")
