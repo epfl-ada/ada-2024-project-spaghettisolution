@@ -1,1 +1,3 @@
-/data
+/data/*
+!data/cleaned_data/
+!/data/raw_data/README.txt
