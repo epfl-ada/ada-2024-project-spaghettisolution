@@ -386,7 +386,7 @@ def plot_genres_heat_map(dominent_genre_date_df):
         
 
         plot_heat_map(table_df= merge_genre_date_df,
-                      title= 'Distribution of mains genres per Released Date',
+                      title= 'USA movies: Distribution of mains genres per Released Date',
                       ylabel= 'Main Genres',
                       figsize= (8.5,7))
         
@@ -425,7 +425,7 @@ def plot_spec_genres_heat_map(df):
 
 
     plot_heat_map(table_df= merge_cross_df,
-                      title= 'Distribution of Specific Genres per Released Date',
+                      title= 'USA movies: Distribution of Specific Genres per Released Date',
                       ylabel= 'Main Genres',
                       figsize= (8.5,7))
     
@@ -445,77 +445,94 @@ def hist_sub_plot(df, x, filtered_column, filter, title = None, weights = None):
     plt.title(title)
     plt.xlabel("")
     plt.ylabel("")
+    # # del
+    # plt.xlim(1900, 2021)
 
+def hist_dom_genres_plots(df, normelized = False, dict_weight = None):
+    weight_label = None
+    title_normelized = ''
 
-def hist_dom_genres_plots(df, normelized = False):
     if normelized:
-        # add a column weight for the normalization plot ########## mettre la fonction add_weitgh et juste appelé les weight après dasn hist_subplot
-        df
+        # add a column weight for the normalization plot
+        add_column_weight(df, dict_weight)
+        weight_label = 'weight'
+        title_normelized = 'Normelized '
+        #  ########## mettre la fonction add_weitgh et juste appelé les weight après dasn hist_subplot
+        
 
     fig = plt.figure(figsize=(15, 10.4))
-    fig.suptitle('Distribution of movies realesed per dominent genres over time', size = 'x-large', y =0.95)
-    fig.supylabel('# Movies Released', x = 0.05)
+    fig.suptitle(title_normelized + 'Distribution of USA movies realesed per dominent genres over time', size = 'x-large', y =0.95)
+    fig.supylabel(title_normelized +'# Movies Released', x = 0.05)
     fig.supxlabel('Released Date')
 
     plt.subplot(2,3,1)
     # Action: distribution of film realized over time
-    hist_sub_plot(df,'release_date', 'genres', 'Action' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Action', weights = weight_label) 
 
 
     plt.subplot(2,3,2)
     # Black and white: distribution of film realized over time
-    hist_sub_plot(df,'release_date', 'genres', 'Black-and-white' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Black-and-white', weights = weight_label ) 
 
     plt.subplot(2,3,3)
     # World Cinmea: distribution of film realized over time
-    hist_sub_plot(df,'release_date', 'genres', 'World cinema' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Silent film', weights = weight_label ) 
 
     plt.subplot(2,3,4)
     #Drama: distribution of film realized over time
-    hist_sub_plot(df,'release_date', 'genres', 'Drama' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Drama', weights = weight_label ) 
 
     plt.subplot(2,3,5)
     # Crime Fiction: distribution of film realized over time
-    hist_sub_plot(df,'release_date', 'genres', 'Crime Fiction' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Crime Fiction', weights = weight_label ) 
 
 
     plt.subplot(2,3,6)
     # Short Film: distribution of film realized over time 
-    hist_sub_plot(df,'release_date', 'genres', 'Short Film' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Short Film', weights = weight_label ) 
 
 
 
-def hist_spec_genres_plots(df):
+def hist_spec_genres_plots(df, normelized = False, dict_weight = None):
+    weight_label = None
+    title_normelized = ''
+
+    if normelized:
+        # add a column weight for the normalization plot
+        add_column_weight(df, dict_weight)
+        weight_label = 'weight'
+        title_normelized = 'Normelized '
+    
     fig = plt.figure(figsize=(15, 10.4))
-    fig.suptitle('Distribution of movies realesed per specific genres over time', size = 'x-large', y =0.95)
-    fig.supylabel('# Movies Released', x = 0.05)
+    fig.suptitle(title_normelized + 'Distribution of USA movies realesed per specific genres over time', size = 'x-large', y =0.95)
+    fig.supylabel(title_normelized +'# Movies Released', x = 0.05)
     fig.supxlabel('Released Date')
 
     plt.subplot(2,3,1)
     # 'Anti-war: distribution of film realized over time
-    hist_sub_plot(df,'release_date', 'genres', 'Anti-war' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Anti-war', weights = weight_label ) 
 
 
     plt.subplot(2,3,2)
     # Documentary: distribution of film realized over time
-    hist_sub_plot(df,'release_date', 'genres', 'Documentary' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Documentary', weights = weight_label ) 
 
     plt.subplot(2,3,3)
     # Political drama: distribution of film realized over time
-    hist_sub_plot(df,'release_date', 'genres', 'Political drama' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Political drama', weights = weight_label ) 
 
     plt.subplot(2,3,4)
     #Political cinema: distribution of film realized over time
-    hist_sub_plot(df,'release_date', 'genres', 'Political cinema' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Political cinema', weights = weight_label ) 
 
     plt.subplot(2,3,5)
     # Political satire: distribution of film realized over time
-    hist_sub_plot(df,'release_date', 'genres', 'Political satire' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Political satire', weights = weight_label ) 
 
 
     plt.subplot(2,3,6)
     # Political thriller: distribution of film realized over time 
-    hist_sub_plot(df,'release_date', 'genres', 'Political thriller' ) 
+    hist_sub_plot(df,'release_date', 'genres', 'Political thriller', weights = weight_label ) 
 
 
 def hist_gen_event_date_plots(df):
@@ -653,39 +670,44 @@ def dist_spec_genre_plot(genre_df):
     plt.figure(figsize=(15, 5))
     sns.barplot(x= dist_specific_genre.index, y= dist_specific_genre.values)
     plt.xticks(rotation = 90)
-    plt.title("Specific Genres Movies")
+    plt.title("Specific Genres in USA Movies")
     plt.xlabel("Genres")
     plt.ylabel(" # movies released")
     return specific_genre_df
 
-def dist_dom_genre_plot(movies_clean_df, threshold =10):
+def dist_USA_dom_genre_plot(movies_clean_df, threshold =10):
     genre_df = movies_clean_df.copy(deep= True)
 
-    # drop na value in columns genres and release_date 
+    # drop na value in columns genres 
     genre_df.dropna(subset= ['genres'], inplace = True)
 
+    #remove film with no country
+    country_genre_df = genre_df.dropna(subset= ['country'], inplace = False)
+    # keep only movies that are made by USA
+    USA_genre_df= country_genre_df[country_genre_df['country'].apply(lambda x: 'United States of America' in x)]
+
     # transform unique str into list of strings in column 'genres'
-    genre_df['genres'] = genre_df['genres'].str.split(', ')
+    USA_genre_df['genres'] = USA_genre_df['genres'].str.split(', ')
 
     # explode genre column 
-    genre_df = genre_df.explode('genres')
+    USA_genre_df = USA_genre_df.explode('genres')
 
     # there is a lot of different genre, let's consider only the most dominents 
     threshold = threshold
-    dominent_genre = genre_df['genres'].value_counts().index[:threshold]
-    dominent_genre_df = genre_df[genre_df['genres'].isin(dominent_genre)]
+    USA_dominent_genre = USA_genre_df['genres'].value_counts().index[:threshold]
+    USA_dominent_genre_df = USA_genre_df[USA_genre_df['genres'].isin(USA_dominent_genre)]
 
     # plot distribution 
-    dist_dominent_genre = dominent_genre_df['genres'].value_counts()
+    dist_USA_dominent_genre = USA_dominent_genre_df['genres'].value_counts()
     
     plt.figure(figsize=(15, 5))
-    sns.barplot(x= dist_dominent_genre.index, y= dist_dominent_genre.values)
+    sns.barplot(x= dist_USA_dominent_genre.index, y= dist_USA_dominent_genre.values)
     plt.xticks(rotation = 90)
-    plt.title("Main genres Movies")
+    plt.title("Main genres USA Movies")
     plt.xlabel("genres")
     plt.ylabel(" # movies released")
 
-    return dominent_genre_df, genre_df
+    return USA_dominent_genre_df, USA_genre_df
 
 def hist_economic_event_date_plots(event_date_df):
 
@@ -788,7 +810,7 @@ def hist_USA_regrouped_genre_date_plot(event_date_df):
     
     war_theme = ["War", "Political", "Anti-war", 'politic', 'war', 'revolution', 'Propaganda', 'Ideology', 'Military']
     social_theme = ["LGBT", "Gay", "Feminist", "Social problem", "Gay Interest", "Social issues", 'Law & Crime', 'racist',  'rights', 'oppression', 'protest', 'equality', 'revolution']
-    economic_theme =  ["Business", "Finance", "Investing",  'poverty', 'survival', 'crisis', 'jobless','wealth']
+    economic_theme =  ["Business", "Finance", "Investing",  'poverty', 'Economic collapse', 'Unemployment', 'jobless','Inflation','Stock market','Bankruptcy','Debt']
 
     USA_war_date_df = list_filter(USA_event_date_df, 'plot',war_theme)
     USA_social__date_df = list_filter(USA_event_date_df, 'plot',social_theme)
@@ -825,8 +847,33 @@ def hist_USA_regrouped_genre_date_plot(event_date_df):
     plt.ylabel("")
 
 
-def add_weight(df, column_weighted):
+def add_weight(df, column_weighted, apply_to_same_df = True, df_to_weight = None):
     dict_weight = df[column_weighted].value_counts().to_dict()
     dict_inv_weight = {key: 1/value for key, value in dict_weight.items()}
-    df['weight'] = df['release_date'].map(dict_inv_weight)
+    if apply_to_same_df:
+        df['weight'] = df['release_date'].map(dict_inv_weight)
+        return df
+    else: 
+        df_to_weight['weight'] = df_to_weight['release_date'].map(dict_inv_weight)
+        return df_to_weight
+    
+
+def create_dict_weight(df, column_weighted):
+    dict_weight = df[column_weighted].value_counts().to_dict()
+    dict_inv_weight = {key: 1/value for key, value in dict_weight.items()}
+    return dict_inv_weight 
+
+def add_column_weight(df, dict_weight):
+    df['weight'] = df['release_date'].map(dict_weight)
     return df
+
+def filter_USA_date(df):
+    date_df = filter_date(df)
+    country_date_df = date_df.dropna(subset= ['country'], inplace = False)
+    USA_date_df = country_date_df[country_date_df['country'].apply(lambda x: 'United States of America' in x)]
+    return USA_date_df
+
+def dict_USA_date_weight(movies_clean_df):
+    USA_date_df = filter_USA_date(movies_clean_df)
+    USA_date_weight_dict = create_dict_weight(USA_date_df, 'release_date')
+    return USA_date_weight_dict
