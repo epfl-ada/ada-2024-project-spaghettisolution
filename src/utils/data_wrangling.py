@@ -3,6 +3,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+def plot_movies_distribution(movies_clean_df):
+    oldest_year = int(movies_clean_df['release_date'].min())
+    youngest_year = int(movies_clean_df['release_date'].max())
+    year_difference = youngest_year - oldest_year
+
+    plt.figure(figsize=(16, 6))
+    sns.histplot(movies_clean_df['release_date'], binwidth=1)
+    plt.xlabel('Release Year')
+    plt.ylabel('Number of Movies')
+    plt.title('Distribution of Movies Over Time')
+    plt.show()
 #distribution of number of film realized by country
 def distributiion_per_country(movies_clean_df):
     #first we focus on film realized by one unique country and not collaborate with other
@@ -892,7 +903,33 @@ def hist_USA_regrouped_genre_date_plot(event_date_df):
     plt.xlabel("")
     plt.ylabel("")
 
+def plot_woman_rights_movies(movies_clean_df):
+    woman_right_themes = [
+        "Feminist", "gender equality", "pay gap", "patriarchy", 
+        "domestic violence", "sexual harassment", "suffragette", "intersectional"
+    ]
+    pattern_woman_right = '|'.join(woman_right_themes)
+    df_movies = movies_clean_df[movies_clean_df['country'].str.contains('United States of America', na=False)]
+    df_woman_right_movies = df_movies[df_movies['plot'].str.contains(pattern_woman_right, case=False, na=False)]
+    total_movies_per_year = df_movies[df_movies["country"] == "United States of America"]['release_date'].value_counts().sort_index()
+    woman_rights_movies_per_year = df_woman_right_movies['release_date'].value_counts().sort_index()
 
+    normalized_woman_rights_movies_per_year = woman_rights_movies_per_year / total_movies_per_year
+
+    woman_rights_movies_per_year.plot(kind='bar', figsize=(12, 6))
+    plt.xlabel('Year')
+    plt.ylabel('Number of Movies')
+    plt.title('Frequency of Woman rights Related Movies per Year')
+    plt.show()
+
+    normalized_woman_rights_movies_per_year = normalized_woman_rights_movies_per_year[normalized_woman_rights_movies_per_year > 0]
+
+    normalized_woman_rights_movies_per_year.plot(kind='bar', figsize=(12, 6))
+    plt.xlabel('Year')
+    plt.ylabel('Normalized Number of Movies')
+    plt.title('Normalized Frequency of Woman rights Related Movies per Year')
+    plt.show()
+    
 def add_weight(df, column_weighted, apply_to_same_df = True, df_to_weight = None):
     dict_weight = df[column_weighted].value_counts().to_dict()
     dict_inv_weight = {key: 1/value for key, value in dict_weight.items()}

@@ -1,6 +1,7 @@
 # Module containing the functions used for the text analysis
 
 import numpy as np
+import os
 import pandas as pd
 import nltk
 from nltk.tokenize import word_tokenize
@@ -120,11 +121,10 @@ def extract_entities_and_adjectives(text: str) -> dict:
         dict: personas and the associated adjectives
     """
     nlp = StanfordCoreNLP(r"../stanford-corenlp-4.5.7/stanford-corenlp-4.5.7")
-    # Annotate the text using CoreNLP
     annotated_text = nlp.annotate(
         text,
         properties={
-            "annotators": "tokenize,ssplit,pos,lemma,ner",  # POS tagging, Lemmatization, NER
+            "annotators": "tokenize,ssplit,pos,lemma,ner", 
             "outputFormat": "json",
         },
     )
@@ -137,8 +137,8 @@ def extract_entities_and_adjectives(text: str) -> dict:
     entities = {}
     # Iterate over sentences to extract named entities and adjectives
     for sentence in annotated_json.get("sentences", []):
-        sentence_adjectives = set()  # To hold adjectives in the sentence
-        sentence_names = set()  # To hold entities in the sentence
+        sentence_adjectives = set()  
+        sentence_names = set()  
         for word in sentence.get("tokens", []):
             word_text = word.get("word")
             pos_tag = word.get("pos")
@@ -150,11 +150,10 @@ def extract_entities_and_adjectives(text: str) -> dict:
             if pos_tag and pos_tag.startswith("JJ"):  # Adjective tags like JJ, JJR, JJS
                 sentence_adjectives.add(word_text)
 
-        # Now, associate adjectives with names in this sentence
+
         for name in sentence_names:
             if name not in entities:
                 entities[name] = set()
-            # Add all adjectives found in this sentence to each name
             entities[name].update(sentence_adjectives)
     nlp.close()
 
@@ -177,11 +176,10 @@ def extract_entities_and_verbs(text):
         dict: personas and their associated verbs
     """
     nlp = StanfordCoreNLP(r"../stanford-corenlp-4.5.7/stanford-corenlp-4.5.7")
-    # Annotate the text using CoreNLP
     annotated_text = nlp.annotate(
         text,
         properties={
-            "annotators": "tokenize,ssplit,pos,lemma,ner",  # POS tagging, Lemmatization, NER
+            "annotators": "tokenize,ssplit,pos,lemma,ner",
             "outputFormat": "json",
         },
     )
@@ -196,29 +194,23 @@ def extract_entities_and_verbs(text):
 
     # Iterate over sentences to extract named entities and verbs
     for sentence in annotated_json.get("sentences", []):
-        sentence_verbs = set()  # To hold verbs in the sentence
-        sentence_names = set()  # To hold entities in the sentence
+        sentence_verbs = set()
+        sentence_names = set()
 
         for word in sentence.get("tokens", []):
             word_text = word.get("word")
             pos_tag = word.get("pos")
             ner_tag = word.get("ner")
 
-            # If the word is a named entity, add it to the sentence names
             if ner_tag == "PERSON":
                 sentence_names.add(word_text)
 
-            # If the word is a verb, add it to sentence verbs
-            if pos_tag and pos_tag.startswith(
-                "VB"
-            ):  # Verb tags like VB, VBD, VBG, VBN, VBP, VBZ
+            if pos_tag and pos_tag.startswith("VB"):  # Verb tags like VB, VBD, VBG, VBN, VBP, VBZ
                 sentence_verbs.add(word_text)
 
-        # Now, associate verbs with names in this sentence
         for name in sentence_names:
             if name not in entities:
                 entities[name] = set()
-            # Add all verbs found in this sentence to each name
             entities[name].update(sentence_verbs)
     entities_verbs = entities
     if entities_verbs:
@@ -240,20 +232,19 @@ def split_text_into_chunks(text, max_length=1000):
     Returns:
         _type_: _description_
     """
-    # Split text into sentences and group them into chunks of a specified size
+
     sentences = text.split(". ")
     chunks = []
     current_chunk = ""
 
     for sentence in sentences:
-        # Add sentence to current chunk if it doesn't exceed max_length
         if len(current_chunk) + len(sentence) < max_length:
             current_chunk += sentence + ". "
         else:
             chunks.append(current_chunk.strip())
             current_chunk = sentence + ". "
 
-    if current_chunk:  # Add any remaining text as the last chunk
+    if current_chunk:
         chunks.append(current_chunk.strip())
 
     return chunks
@@ -270,14 +261,14 @@ def retry_request(text, retries=3, delay=5):
                 properties={
                     "annotators": "tokenize,ssplit,pos,ner,sentiment",
                     "outputFormat": "json",
-                    "timeout": 30000,  # Timeout in milliseconds
+                    "timeout": 30000, 
                 },
             )
             return json.loads(annotated_text)
         except Exception as e:
             print(f"Attempt {attempt + 1} failed: {e}")
             if attempt < retries - 1:
-                time.sleep(delay)  # Wait before retrying
+                time.sleep(delay)
             else:
                 return None
     nlp.close()
@@ -285,7 +276,6 @@ def retry_request(text, retries=3, delay=5):
 
 def extract_entity_sentiments_intermediate(text):
     nlp = StanfordCoreNLP(r"../stanford-corenlp-4.5.7/stanford-corenlp-4.5.7")
-    # Annotate the text using CoreNLP
     annotated_json = retry_request(text)
     if annotated_json is None:
         print("Failed to process the text.")
@@ -294,12 +284,10 @@ def extract_entity_sentiments_intermediate(text):
     entities_sentiments = {}
     overall_sentiment_counts = {"Good": 0, "Neutral": 0, "Bad": 0}
 
-    # Iterate over sentences
     for sentence in annotated_json.get("sentences", []):
-        sentiment = sentence.get("sentiment")  # Sentiment for the sentence
+        sentiment = sentence.get("sentiment") 
         sentiment_category = None
 
-        # Map sentiment to categories
         if sentiment in ["Verypositive", "Positive"]:
             sentiment_category = "Good"
         elif sentiment in ["Neutral"]:
@@ -310,14 +298,12 @@ def extract_entity_sentiments_intermediate(text):
         if sentiment_category:
             overall_sentiment_counts[sentiment_category] += 1
 
-        # Extract entities (e.g., PERSON) in the sentence
         sentence_entities = {
             token["word"]
             for token in sentence.get("tokens", [])
             if token.get("ner") == "PERSON"
         }
 
-        # Associate sentiment with each entity
         for entity in sentence_entities:
             if entity not in entities_sentiments:
                 entities_sentiments[entity] = {"Good": 0, "Neutral": 0, "Bad": 0}
@@ -329,18 +315,12 @@ def extract_entity_sentiments_intermediate(text):
 
 def extract_entity_sentiment(text):
 
-    # Split the large document into chunks
     chunks = split_text_into_chunks(text)
-
-    # Initialize result containers
     overall_sentiment_percentages = {"Good": 0, "Neutral": 0, "Bad": 0}
     individual_sentiment_percentages = {}
-
-    # Process each chunk separately
     for chunk in chunks:
         chunk_overall, chunk_individual = extract_entity_sentiments_intermediate(chunk)
 
-        # Aggregate results
         for sentiment in overall_sentiment_percentages:
             overall_sentiment_percentages[sentiment] += chunk_overall.get(sentiment, 0)
 
@@ -354,14 +334,11 @@ def extract_entity_sentiment(text):
             for sentiment, count in percentages.items():
                 individual_sentiment_percentages[entity][sentiment] += count
 
-    # After processing all chunks, calculate final percentages
     total_sentences = sum(overall_sentiment_percentages.values())
     final_overall_percentages = {
         sentiment: (count / total_sentences * 100)
         for sentiment, count in overall_sentiment_percentages.items()
     }
-
-    # Print final results
     print("Overall Sentiment Percentages:")
     for sentiment, percentage in final_overall_percentages.items():
         print(f"{sentiment}: {percentage:.2f}%")
@@ -377,3 +354,187 @@ def extract_entity_sentiment(text):
                 else 0
             )
             print(f"  {sentiment}: {percentage:.2f}%")
+def prepare_persona_data(genres_filter=None, country_filter=None, title=None):
+    movies_df = pd.read_csv(f'data\cleaned_data\movies_data.csv')
+    
+    if genres_filter:
+        if country_filter:
+            new_movies_df = movies_df[(movies_df['genres'].str.contains(genres_filter, case=False, na=False)) & 
+                                      (movies_df['country'].str.contains(country_filter, case=False, na=False))]
+        else:
+            new_movies_df = movies_df[movies_df['genres'].str.contains(genres_filter, case=False, na=False)]
+    else:
+        if country_filter:
+            new_movies_df = movies_df[movies_df['country'].str.contains(country_filter, case=False, na=False)]
+        else:
+            new_movies_df = movies_df
+    
+    new_movies_df['Persona'] = None
+    new_movies_df.to_csv(f'data\cleaned_data\{title}_movies_data.csv', index=False)
+    return new_movies_df
+
+
+def extract_entities_and_related_words_with_coref(text):
+    nlp = StanfordCoreNLP(r'../stanford-corenlp-4.5.7/stanford-corenlp-4.5.7')
+    annotated_text = nlp.annotate(text, properties={
+        'annotators': 'tokenize,ssplit,pos,lemma,ner,depparse,coref',
+        'outputFormat': 'json'
+    })
+    
+    try:
+        annotated_json = json.loads(annotated_text)
+    except json.JSONDecodeError as e:
+        print(f"Error parsing the JSON response: {e}")
+        return {}
+
+    entities = {}
+
+    coref_persons = {}
+    coreferences = annotated_json.get('corefs', {})
+
+    for sentence_index, sentence in enumerate(annotated_json.get('sentences', [])):
+        for token in sentence.get('tokens', []):
+            if token['ner'] == 'PERSON':
+                person_name = token['word']
+                if person_name not in coref_persons:
+                    coref_persons[person_name] = person_name
+
+    for coref_id, mentions in coreferences.items():
+        main_person_name = None
+
+        for mention in mentions:
+            #adapt the index to 0-based for python
+            sentence_index = mention['sentNum'] - 1
+            token_start = mention['startIndex'] - 1
+            token_end = mention['endIndex'] - 1
+            tokens = annotated_json['sentences'][sentence_index]['tokens'][token_start:token_end]
+
+            person_tokens = [token for token in tokens if token['ner'] == 'PERSON']
+            if person_tokens:
+                proper_names = [
+                    token['word'] for token in person_tokens if token['pos'] in ['NNP', 'NNPS']
+                ]
+                if proper_names:
+                    main_person_name = " ".join(proper_names)
+                    break
+
+        if main_person_name:
+            for mention in mentions:
+                sentence_index = mention['sentNum'] - 1
+                token_start = mention['startIndex'] - 1
+                token_end = mention['endIndex'] - 1
+                tokens = annotated_json['sentences'][sentence_index]['tokens'][token_start:token_end]
+                mention_text = " ".join(token['word'] for token in tokens)
+
+                coref_persons[mention_text] = main_person_name
+
+    for sentence_index, sentence in enumerate(annotated_json.get('sentences', [])):
+        # Use dependency parsing to find adjective, noun, and verb modifiers
+        for dep in sentence.get('enhancedPlusPlusDependencies', []):
+            gov_index = dep.get('governor') - 1  
+            dep_index = dep.get('dependent') - 1
+            dep_relation = dep.get('dep')
+
+            governor_word = sentence['tokens'][gov_index]['word']
+            dependent_word = sentence['tokens'][dep_index]['word']
+            governor_pos = sentence['tokens'][gov_index]['pos']
+            dependent_pos = sentence['tokens'][dep_index]['pos']
+
+            linked_entity = None
+
+            # Check if the dependency is 'amod' a PERSON is mentionned or coref
+            if dep_relation == 'amod' and governor_word in coref_persons:
+                linked_entity = coref_persons[governor_word]
+                if linked_entity:
+                    if linked_entity not in entities:
+                        entities[linked_entity] = set()
+                    entities[linked_entity].add(dependent_word)
+
+            # Check if the relation is a verb or adjective linked to a PERSON entity
+            elif dep_relation in ['cop', 'nsubj', 'xcomp', 'acl'] and dependent_word in coref_persons:
+                linked_entity = coref_persons[dependent_word]
+                if linked_entity:
+                    if linked_entity not in entities:
+                        entities[linked_entity] = set()
+                    entities[linked_entity].add(governor_word)
+
+            # Check if the relation is a noun linked to a PERSON entity
+            elif dep_relation in ['nsubj', 'dobj', 'iobj'] and (governor_pos.startswith('NN') or dependent_pos.startswith('NN')):
+                if governor_word in coref_persons:
+                    linked_entity = coref_persons[governor_word]
+                elif dependent_word in coref_persons:
+                    linked_entity = coref_persons[dependent_word]
+
+                if linked_entity:
+                    if linked_entity not in entities:
+                        entities[linked_entity] = set()
+                    entities[linked_entity].add(governor_word)
+                    entities[linked_entity].add(dependent_word)
+    nlp.close()
+    return entities
+        
+def retry_request(text, retries=3, delay=5):
+
+    for attempt in range(retries):
+        try:
+            annotated_text = nlp.annotate(text, properties={
+                'annotators': 'tokenize,ssplit,pos,ner,sentiment',
+                'outputFormat': 'json',
+                'timeout': 30000 
+            })
+            return json.loads(annotated_text)
+        except Exception as e:
+            print(f"Attempt {attempt + 1} failed: {e}")
+            if attempt < retries - 1:
+                time.sleep(delay) 
+            else:
+                return None
+            
+def extract_entity_sentiments(text):
+    print("Current position in the computer: ", os.getcwd())
+    nlp = StanfordCoreNLP(r'..\stanford-corenlp-4.5.7\stanford-corenlp-4.5.7')
+    annotated_json = retry_request(text)
+    if annotated_json is None:
+        print("Failed to process the text.")
+        return {}, {}
+
+    entities_sentiments = {}
+    overall_sentiment_counts = {"Good": 0, "Neutral": 0, "Bad": 0}
+
+    for sentence in annotated_json.get('sentences', []):
+        sentiment = sentence.get('sentiment') 
+        sentiment_category = None
+
+        if sentiment in ['Verypositive', 'Positive']:
+            sentiment_category = "Good"
+        elif sentiment in ['Neutral']:
+            sentiment_category = "Neutral"
+        elif sentiment in ['Negative', 'Verynegative']:
+            sentiment_category = "Bad"
+
+        if sentiment_category:
+            overall_sentiment_counts[sentiment_category] += 1
+
+        sentence_entities = {
+            token['word'] for token in sentence.get('tokens', [])
+            if token.get('ner') == 'PERSON'
+        }
+
+        for entity in sentence_entities:
+            if entity not in entities_sentiments:
+                entities_sentiments[entity] = {"Good": 0, "Neutral": 0, "Bad": 0}
+            entities_sentiments[entity][sentiment_category] += 1
+    nlp.close()
+    return overall_sentiment_counts, entities_sentiments
+
+def process_personas_movies(df):
+    nlp = StanfordCoreNLP(r'../stanford-corenlp-4.5.7/stanford-corenlp-4.5.7')
+    total_rows = len(df)
+
+    for idx, (index, row) in enumerate(df.iterrows(), start=1):
+        print(f"Processing {idx}/{total_rows}")
+        df.at[index, 'Persona'] = extract_entities_and_related_words_with_coref(row['plot']) if pd.notnull(row['plot']) else {}
+
+    nlp.close()
+    return df
+
