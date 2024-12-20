@@ -10,7 +10,7 @@ The datastory is available at <https://nvalsa.github.io/>
 
 ## Abstract
 
-Art is shaped by current events, and  cinema is no exception. In this project classical statistical analysis along with modern machine learning techniques are used to classify the characters and events described in the CMU Movie Summary Corpus. The main goal is to highlight the links between cinema and major social, political and economic events of the second half of the XXth centuray and the early XXIst century. Through our analysis of the personas and plots we aim to develop a method to assess the socio-political climate through its representation in film. Our main focus is on the american film industry.
+Art is shaped by current events, and  cinema is no exception. In this project classical statistical analysis along with modern machine learning techniques are used to classify the characters and events described in the CMU Movie Summary Corpus. The main goal is to highlight the links between cinema and major social, political and economic events of the second half of the XXth century and the early XXIst century. Through our analysis of the personas and plots we aim to develop a method to assess the socio-political climate through its representation in film. Our main focus is on the american film industry.
 
 ## Research Questions
 
@@ -20,7 +20,7 @@ Throughout this study, we will examine the relationship between movies and the f
 
 We will focus on the following research questions:
 
-1. Are the main political social and economic events reflected in the themes explored in  movies ?  
+1. Are the main political social and economic events reflected in the themes explored in movies ?  
 
 2. How do the dominant genres of movies shift in response to major historical or cultural events (e.g., war, economic crises)?
 
