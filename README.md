@@ -2,50 +2,41 @@
 
 ## Title
 
-History in Hollywood: How trends in the plots and personas in American Cinema reflect historical event and relate with other film industries.
+History in Hollywood: How trends in the plots, themes and personas in American Cinema reflect political, social and economic events.
+
+## Website
+
+The datastory is available at <https://nvalsa.github.io/>
 
 ## Abstract
 
-Art is shaped by current events, and  cinema is no exception. This project uses an analysis of the characteristics of actors such as their gender and ethnicity along with modern machine learning techniques to classify the characters and events described in movie summaries from the CMU Movie Summary Corpus. The main goal is to highlight the links between cinema and major social, political and economic events of the second half of the XXth century. Through our analysis of the personas and plots we aim to develop a method to assess the socio-political climate through its representation in film. Our main focus is on the american film industry, however, we aim to contrast it with other film industries for select historical periods
+Art is shaped by current events, and  cinema is no exception. In this project classical statistical analysis along with modern machine learning techniques are used to classify the characters and events described in the CMU Movie Summary Corpus. The main goal is to highlight the links between cinema and major social, political and economic events of the second half of the XXth centuray and the early XXIst century. Through our analysis of the personas and plots we aim to develop a method to assess the socio-political climate through its representation in film. Our main focus is on the american film industry.
 
 ## Research Questions
 
 Throughout this study, we will examine the relationship between movies and the following key historical periods and events:
 
-- Second World War (1939-1945)
-- Indian independence (1947)
-- Civil rights movements (1954 to 1968)
-- Vietnam war (1955-1975)
-- First and subsequent waves of  feminism
-- Key Events of the Cold War (1947-1991):
-  - Arms Race
-  - Space Race
-  - Proxy wars
-  - Fall of the Berlin wall (1989)
-- Rwandan Genocide (1994)
-- Rise of internet and digital culture (late 90's)
-- 9/11 (2001)
-- Financial Crisis (2008)
+
 
 We will focus on the following research questions:
 
-1. How can important social movements influence the casting of actors and actresses?
+1. Are the main political social and economic events reflected in the themes explored in  movies ?  
 
-2. How are both the genre of the movie and personas of characters impacted by the political climate at the time?
+2. How do the dominant genres of movies shift in response to major historical or cultural events (e.g., war, economic crises)?
 
-3. Are the reactions to social and political events seen in movies produced in the USA also observable in film industries around the world?
+3. Are there certain types of personas that are more prelavent in certain genres of movies or certain time periods?
 
-4. How do the archetypes of villains evolve to reflect contemporary fears (e.g., Nazis in WWII-era films, terrorists post-9/11, corporations post-financial crisis)?
+4. How are both the genre of the movie and personas of characters impacted by the political climate at the time?
 
-5. Are conflicts in movies during the Cold War more focused on ideological struggles compared to personal or interpersonal conflicts in post-1991 films?
 
-6. How do the dominant genres of movies shift in response to major historical or cultural events (e.g., war, economic crises)?
 
-7. How does the portrayal of technology in movies change before and after the rise of the internet (1990s)?
 
 ## Additional datasets
 
-We do not use any additional datasets. However, we do make use of the coreNLP python library, which uses external data.
+We supplemented the dataset with a dataset containing plot summaries of movies from wikipedia. We chose to do this to increase the number of plot summaries available for analysis. We removed duplicates between the orignial dataset and the supplemental one.
+The supplemental dataset is available at  <https://www.kaggle.com/datasets/jrobischon/wikipedia-movie-plots>
+
+We also used the CoreNLP library that is trained on external data
 
 ## Timeline
 
@@ -85,40 +76,25 @@ The story will be finalized, and the webpage will be set up using Jekyll and Git
 - Separate movies produced in the USA from those produced in other countries due to the former's dominance in the dataset.  
 - Plot the distribution of each data field (e.g., genres, revenue, runtime) over time.  
 
+**Semantic Analysis**
+- Identify key words associated to each main historical event and plot their evolution over time. 
+- Use statistical tests to verify the trends identified.
+
 **Linguistic Analysis of Summaries**  
 
 - Use of CoreNLP to extract the adjectives and verbs linked to the different characters of each films. 
 - The sentiment of each sentence with a character will be analyzed to help the differentiation.
 - Use clustering on the different words extracted this way to determine different kind of personas.
-%- Utilize CoreNLP to extract occurrences of characters and analyze their attributes, such as personas, names, and nationalities.  
-- Visualize these characteristics over time to identify trends.  
-- Further refine the linguistic methodology to ensure robust analysis of narrative elements.  
+- Visualize the distribution of the personas in each cluster over time and in certain genres 
 
-### Answering Research Questions
 
-**Linking Trends to Historical Events**  
 
-- Identify statistically significant changes in data fields over time and relate them to historical and social events.
-
-**Analyzing Shifts in Narrative and Character Representation**  
-
-- Observe shifts in plot themes, character archetypes, and casting trends to determine their alignment with societal movements and global events.
-
-### Final Steps
-
-**Data Integration**  
-
-- Merge the movie data, actor data, and CoreNLP linguistic analysis into a unified dataset for comprehensive examination.  
-
-**Result Presentation**  
-
-- Generate plots and statistical summaries to represent findings and provide clear answers to the research questions.  
 
 ## Team Organization \& Milestones
 
 Nico Valsangiacomo: Writing the story, creation of the web page
 
-Ismaël Gomes Almada Guillemin: Processing and analysis of movies and actors data
+Ismaël Gomes Almada Guillemin: Processing and analysis of movies
 
 Zoë Evans: Processing and analysis of summaries data
 
@@ -128,7 +104,9 @@ Nils Antonovitch: Writing the story, creation of the web page
 
 ## Instructions for external libraries and the dataset
 
-The dataset is not included in the git repository as it is too large. It should be downloaded from https://www.cs.cmu.edu/~ark/personas/ . It should be placed in the `data/raw_data` folder of the repository.
+The dataset is not included in the git repository as it is too large. It should be downloaded from <https://www.cs.cmu.edu/~ark/personas/> . It should be placed in the `data/raw_data` folder of the repository.
+
+The supplementary dataset is not included in the git repository as it is too large. It should be downloaded from <https://www.kaggle.com/datasets/jrobischon/wikipedia-movie-plots>. It should be placed in the `data/raw_data/kaggleData` folder of the repository.
 
 Two external librairies are used in this project : StanfordcoreNLP and NLTK
 
@@ -148,9 +126,3 @@ For NLTK:
    ```python
    import nltk
    nltk.download()
-
-
-
-## Questions for TAs
-
-Are we permitted to use a pretrained LLM to reformulate the plot summaries into simpler sentences? This would improve the quality of our results using CoreNLP as it struggles to identify which adjective to associate with each persona in complex sentences. This would not significantly change our pipeline, but rather just introduce an extra step to simplify the texts.
