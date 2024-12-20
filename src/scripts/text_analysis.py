@@ -681,3 +681,19 @@ def match_personas_topic(dataframe, tfidf, model):
             # Find the topic with the highest probability for the word
             best_topic = np.argmax(word_topic_distribution)
             dataframe.loc[index, "topic"] = best_topic
+
+def plot_topic_evolution(start_topic, end_topic,topic_evolution):
+    selected_topics = list(range(start_topic, end_topic + 1))
+    selected_topic_evolution = topic_evolution[selected_topics]
+    
+    cumulative_topic_evolution = selected_topic_evolution.cumsum()
+    
+    max_appearance = cumulative_topic_evolution.max()
+    cumulative_topic_evolution_normalized = cumulative_topic_evolution.div(max_appearance)
+    
+    cumulative_topic_evolution_normalized.plot(kind='line', figsize=(15, 8))
+    plt.title(f'Normalized Cumulative Appearance of Assigned Topics {start_topic} to {end_topic} Over Time')
+    plt.xlabel('Release Date')
+    plt.ylabel('Normalized Cumulative Proportion of Topics')
+    plt.legend(title='Assigned Topics', bbox_to_anchor=(1.05, 1), loc='upper left', ncol=3)
+    plt.show()

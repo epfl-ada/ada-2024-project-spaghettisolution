@@ -929,7 +929,53 @@ def plot_woman_rights_movies(movies_clean_df):
     plt.ylabel('Normalized Number of Movies')
     plt.title('Normalized Frequency of Woman rights Related Movies per Year')
     plt.show()
+def plot_event_movies(df_movies, event_words, event_name, country=None):
     
+    pattern_event = '|'.join(event_words)
+
+    df_event_movies = df_movies[df_movies['plot'].str.lower().str.contains(pattern_event, case=False, na=False)]
+
+    if country:
+        total_movies_per_year = (
+            df_movies[df_movies["country"] == country]['release_date']
+            .value_counts()
+            .sort_index()
+        )
+    else:
+        total_movies_per_year = (
+            df_movies['release_date']
+            .value_counts()
+            .sort_index()
+        )
+
+    event_movies_per_year = (
+        df_event_movies['release_date']
+        .value_counts()
+        .sort_index()
+    )
+
+    normalized_event_movies_per_year = event_movies_per_year / total_movies_per_year
+
+    plt.figure(figsize=(12, 6))
+    event_movies_per_year.plot(kind='bar', color='blue')
+    plt.xlabel('Year')
+    plt.ylabel('Number of Movies')
+    plt.title(f'Frequency of {event_name}-Related Movies per Year')
+    if country:
+        plt.title(f'Frequency of {event_name}-Related Movies per Year in {country}')
+    plt.show()
+
+    normalized_event_movies_per_year = normalized_event_movies_per_year[normalized_event_movies_per_year > 0]
+
+    plt.figure(figsize=(12, 6))
+    normalized_event_movies_per_year.plot(kind='bar', color='blue')
+    plt.xlabel('Year')
+    plt.ylabel('Normalized Number of Movies')
+    plt.title(f'Normalized Frequency of {event_name}-Related Movies per Year')
+    if country:
+        plt.title(f'Normalized Frequency of {event_name}-Related Movies per Year in {country}')
+    plt.show()
+   
 def add_weight(df, column_weighted, apply_to_same_df = True, df_to_weight = None):
     dict_weight = df[column_weighted].value_counts().to_dict()
     dict_inv_weight = {key: 1/value for key, value in dict_weight.items()}
