@@ -535,36 +535,45 @@ def hist_spec_genres_plots(df, normelized = False, dict_weight = None):
     hist_sub_plot(df,'release_date', 'genres', 'Political thriller', weights = weight_label ) 
 
 
-def hist_gen_event_date_plots(df):
+def hist_gen_event_date_plots(df, normelized = False, dict_weight = None):
+    weight_label = None
+    title_normelized = ''
+
+    if normelized:
+        # add a column weight for the normalization plot
+        add_column_weight(df, dict_weight)
+        weight_label = 'weight'
+        title_normelized = 'Normelized '
+
     fig = plt.figure(figsize=(15, 10.4))
-    fig.suptitle('Movie Distribution by Release Date and Country with War/Politics Themes', size = 'x-large', y =0.95)
-    fig.supylabel('# Movies Released', x = 0.05)
+    fig.suptitle(title_normelized +'Movie Distribution by Release Date and Country with War/Politics Themes', size = 'x-large', y =0.95)
+    fig.supylabel(title_normelized +'# Movies Released', x = 0.05)
     fig.supxlabel('Released Date')
 
     plt.subplot(2,3,1)
     # Germany: distribution of film realized over time with War/Plotics Themes
-    hist_sub_plot(df, 'release_date', 'country', 'Germany')
+    hist_sub_plot(df, 'release_date', 'country', 'Germany', weights = weight_label )
 
     plt.subplot(2,3,2)
     # United States of America: distribution of film realized over time with War/Plotics Themes
-    hist_sub_plot(df, 'release_date', 'country', 'United States of America')
+    hist_sub_plot(df, 'release_date', 'country', 'United States of America', weights = weight_label )
 
     plt.subplot(2,3,3)
     # France: distribution of film realized over time with War/Plotics Themes
-    hist_sub_plot(df, 'release_date', 'country', 'France')
+    hist_sub_plot(df, 'release_date', 'country', 'France', weights = weight_label )
 
     plt.subplot(2,3,4)
     # United Kingdom: distribution of film realized over time with War/Plotics Themes
-    hist_sub_plot(df, 'release_date', 'country', 'United Kingdom') 
+    hist_sub_plot(df, 'release_date', 'country', 'United Kingdom', weights = weight_label ) 
 
     plt.subplot(2,3,5)
     # Italie: distribution of film realized over time with War/Plotics Themes
-    hist_sub_plot(df, 'release_date', 'country', 'Italy')
+    hist_sub_plot(df, 'release_date', 'country', 'Italy', weights = weight_label )
 
 
     plt.subplot(2,3,6)
     # Russia: distribution of film realized over time with War/Plotics Themes
-    hist_sub_plot(df, 'release_date', 'country', 'Russia')
+    hist_sub_plot(df, 'release_date', 'country', 'Russia', weights = weight_label )
 
 
 def plot_gen_event_date_country_heatmap(df):
@@ -593,39 +602,49 @@ def list_filter(df, filtered_column, list_items):
 #     return ww2_df
 
 
-def hist_event_USA_plots(df):
+def hist_event_USA_plots(df, normelized = False, dict_weight = None):
     # filter to obtain only movies with USA
     country_df = df.dropna(subset= ['country'], inplace = False)
     USA_df= country_df[country_df['country'].apply(lambda x: 'United States of America' in x)]
+
+    weight_label = None
+    title_normelized = ''
+    if normelized:
+        # add a column weight for the normalization plot
+        add_column_weight(USA_df, dict_weight)
+        weight_label = 'weight'
+        title_normelized = 'Normelized '
+
+    
     fig = plt.figure(figsize=(15, 10.4))
-    fig.suptitle('USA Movie Distribution by Release Date with Different Topics', size = 'x-large', y =0.95)
-    fig.supylabel('# Movies Released', x = 0.05)
+    fig.suptitle(title_normelized+'USA Movie Distribution by Release Date with Different Topics', size = 'x-large', y =0.95)
+    fig.supylabel(title_normelized+'# Movies Released', x = 0.05)
     fig.supxlabel('Released Date')
 
     plt.subplot(2,3,1)
     # 'ww2: distribution of film realized over time
-    hist_sub_plot(USA_df,'release_date', 'plot', ['world war II', 'world war 2', 'nazis', 'allied forces', 'axis power', 'Holocaust', 'gestapo', 'pearl harbor', 'Concentration camp', 'third Reich', 'hitler'], 'world War II' ) 
+    hist_sub_plot(USA_df,'release_date', 'plot', ['world war II', 'world war 2', 'nazis', 'allied forces', 'axis power', 'Holocaust', 'gestapo', 'pearl harbor', 'Concentration camp', 'third Reich', 'hitler'], 'world War II', weights = weight_label) 
 
     plt.subplot(2,3,2)
     # Civil rights movements : distribution of film realized over time
-    hist_sub_plot(USA_df,'release_date', 'plot', ['Malcom X', 'Rosa Parks', 'Martin Luther', 'Stokely Carmichael', 'March on Washington', 'Montgomery Bus ', 'Birmingham Campaign',  'Civil Rights','Voting Rights Act of 1965', 'NAACP', 'SCLC', 'National Association for the Advancement of Colored People', 'Southern Christian Leadership Conference', 'black panthers', 'Segregation', 'Racial equality', 'Human rights', 'Jim Crow laws'], 'Civil Rights Movements')
+    hist_sub_plot(USA_df,'release_date', 'plot', ['Malcom X', 'Rosa Parks', 'Martin Luther', 'Stokely Carmichael', 'March on Washington', 'Montgomery Bus ', 'Birmingham Campaign',  'Civil Rights','Voting Rights Act of 1965', 'NAACP', 'SCLC', 'National Association for the Advancement of Colored People', 'Southern Christian Leadership Conference', 'black panthers', 'Segregation', 'Racial equality', 'Human rights', 'Jim Crow laws'], 'Civil Rights Movements', weights = weight_label)
 
     plt.subplot(2,3,3)
     #Vietnam war: distribution of film realized over time
-    hist_sub_plot(USA_df,'release_date', 'plot', ['Vietnam War', 'Vietnam', 'Viet', 'Cong', 'Vietnamization', 'fall off Saigon', 'Mekong Delta'], 'Vietnam War')
+    hist_sub_plot(USA_df,'release_date', 'plot', ['Vietnam War', 'Vietnam', 'Viet', 'Cong', 'Vietnamization', 'fall off Saigon', 'Mekong Delta'], 'Vietnam War', weights = weight_label)
 
     plt.subplot(2,3,4)
     #Cold war: distribution of film realized over time
-    hist_sub_plot(USA_df,'release_date', 'plot',['Cold war', 'Iron Curtain', 'Arms Race', 'Space race', 'proxy wars', 'Berlin wall'], 'Cold War')
+    hist_sub_plot(USA_df,'release_date', 'plot',['Cold war', 'Iron Curtain', 'Arms Race', 'Space race', 'proxy wars', 'Berlin wall'], 'Cold War', weights = weight_label)
 
     plt.subplot(2,3,5)
     # Financial Crisis (2008): distribution of film realized over time
-    hist_sub_plot(USA_df,'release_date', 'plot', ["Financial Crisis 2008" "Subprime Mortgages", "Lehman Brothers", "Mortgage-Backed Securities","MBS", "Toxic Assets", "Bailout", "Financial Meltdown", "Foreclosure", "Bankruptcy", "Economic Recession"], 'Financial Crisis (2008)')
+    hist_sub_plot(USA_df,'release_date', 'plot', ["Financial Crisis 2008" "Subprime Mortgages", "Lehman Brothers", "Mortgage-Backed Securities","MBS", "Toxic Assets", "Bailout", "Financial Meltdown", "Foreclosure", "Bankruptcy", "Economic Recession"], 'Financial Crisis (2008)', weights = weight_label)
 
 
     plt.subplot(2,3,6)
     # 11/09/01 : distribution of film realized over time 
-    hist_sub_plot(USA_df,'release_date', 'plot', ['twin towers', 'world trade center', 'al-qaeda', 'terrorism', 'September 11', 'flight 93'], 'September 11')
+    hist_sub_plot(USA_df,'release_date', 'plot', ['twin towers', 'world trade center', 'al-qaeda', 'terrorism', 'September 11', 'flight 93'], 'September 11', weights = weight_label)
 
 def filter_per_country(df):
     country_df = df.copy(deep=True)
@@ -638,22 +657,33 @@ def filter_per_plot_date(df):
     plot_date_df = df.copy(deep= True)
     plot_date_df.dropna(subset= ['plot'], inplace= True)
     plot_date_df.dropna(subset= ['release_date'], inplace= True)
+    plot_date_df['release_date'] = plot_date_df['release_date'].astype(int, copy= True)
     return plot_date_df
 
 
-def hist_gen_event_date_plot(df):
-    general_event_list = ['politic', 'war', 'revolution', 'Propaganda', 'Ideology', 'Military' ]
+def hist_gen_event_date_plot(df, normelized = False, dict_weight = None):
+    weight_label = None
+    title_normelized = ''
+
+    if normelized:
+        # add a column weight for the normalization plot
+        add_column_weight(df, dict_weight)
+        weight_label = 'weight'
+        title_normelized = 'Normelized '
+
+    general_event_list = ["Political", "Anti-war", 'politic', 'war', 'revolution', 'Propaganda', 'Ideology', 'Military']
 
     # filter dataframe to obtain only movies that have one of this word in the plot 
     gen_event_date_df = list_filter(df, 'plot',general_event_list)
 
 
     # distribution over time
-    sns.histplot(x = 'release_date', data= gen_event_date_df); 
+    plt.figure(figsize=(4, 4))
+    sns.histplot(x = 'release_date', data= gen_event_date_df, weights= weight_label, binwidth=5); 
     plt.xticks(rotation = 90)
-    plt.title('Distribution of Movies per release date containing words relative to war and politic in plot')
+    plt.title(title_normelized+ 'Distribution of Movies per release date containing words relative to war and politic in plot')
     plt.xlabel("Released Date")
-    plt.ylabel("# Movie Released Date")
+    plt.ylabel(title_normelized + "# Movie Released Date")
 
     return gen_event_date_df
 
@@ -709,10 +739,10 @@ def dist_USA_dom_genre_plot(movies_clean_df, threshold =10):
 
     return USA_dominent_genre_df, USA_genre_df
 
-def hist_economic_event_date_plots(event_date_df):
+def hist_economic_event_date_plots(event_date_df, normelized = False, dict_weight = None):
 
     # filter to take only movies that containes econmics related words in the plot
-    economic_event_list = ["Unemployment", "Recession", "Foreclosure", "Bankruptcy", "Debt", "Poverty", "Layoff", "Financial crisis", "Economic collapse"]
+    economic_event_list = ["Business", "Finance", "Investing",  'poverty', 'Economic collapse', 'Unemployment', 'jobless','Inflation','Stock market','Bankruptcy','Debt']
         # filter dataframe to obtain only movies that have one of this words in the plot 
     economic_event_date_df = list_filter(event_date_df, 'plot',economic_event_list)
 
@@ -722,41 +752,49 @@ def hist_economic_event_date_plots(event_date_df):
     economic_country_event_date_df['country'] = economic_country_event_date_df['country'].str.split(', ')
     economic_country_event_date_df = economic_country_event_date_df.explode('country')
 
+    weight_label = None
+    title_normelized = ''
+    if normelized:
+        # add a column weight for the normalization plot
+        add_column_weight(economic_country_event_date_df, dict_weight)
+        weight_label = 'weight'
+        title_normelized = 'Normelized '
+
     fig = plt.figure(figsize=(15, 10.4))
-    fig.suptitle('Movie Distribution by Release Date and Country with Economic Struggle Theme', size = 'x-large', y =0.95)
-    fig.supylabel('# Movies Released', x = 0.05)
+    fig.suptitle(title_normelized +'Movie Distribution by Release Date and Country with Economic Struggle Theme', size = 'x-large', y =0.95)
+    fig.supylabel(title_normelized +'# Movies Released', x = 0.05)
     fig.supxlabel('Released Date')
 
     plt.subplot(2,3,1)
     # Germany: distribution of film realized over time with economic Themes
-    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'Germany')
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'Germany',  weights = weight_label)
 
     plt.subplot(2,3,2)
     # United States of America: distribution of film realized over time with economic Themes
-    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'United States of America')
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'United States of America',  weights = weight_label)
 
     plt.subplot(2,3,3)
     # France: distribution of film realized over time with economic Themes
-    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'France')
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'France',  weights = weight_label)
 
     plt.subplot(2,3,4)
     # United Kingdom: distribution of film realized over time with economic Themes
-    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'United Kingdom') 
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'United Kingdom',  weights = weight_label) 
 
     plt.subplot(2,3,5)
     # Italy: distribution of film realized over time with economic Themes
-    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'Italy')
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'Italy',  weights = weight_label)
 
 
     plt.subplot(2,3,6)
     # Japan: distribution of film realized over time with economic Themes
-    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'Japan')
+    hist_sub_plot(economic_country_event_date_df, 'release_date', 'country', 'Japan',  weights = weight_label)
 
 
-def hist_social_event_date_plots(event_date_df):
+def hist_social_event_date_plots(event_date_df, normelized = False, dict_weight = None):
 
     # filter to take only movies that containes econmics related words in the plot
-    social_event_list = ["rights", "oppression", "protest", "equality", "revolution", "racism", "activis", "civil rights", "discrimination", 'reform', 'social justice'," Feminism", 'feminist',  "Racism",'racist', "Homophobia",'homophobic', "Gender Equality", "Sexism", 'sexist', "Intersectionality", "LGBTQ+","LGBT", 'coming out', 'hate crime', 'misogyny', 'hatred of women', 'misogynist', 'sexual harassment', 'rape','raped', 'rapist', 'Segregation', 'Antisemitism','Anti-semitism','anti-semitic', 'antisemitic', 'jewish', 'black people']  
+    social_event_list = ["rights", "oppression", "protest", "equality", "revolution", "racism", "activis", "civil rights", "discrimination", 'reform', 'social justice'," Feminism", 'feminist',  "Racism",'racist', "Homophobia",'homophobic', "Gender Equality", "Sexism", 'sexist', "Intersectionality", "LGBTQ+","LGBT", 'coming out', 'hate crime', 'misogyny', 'hatred of women', 'misogynist', 'sexual harassment', 'rape','raped', 'rapist', 'Segregation', 'Antisemitism','Anti-semitism','anti-semitic', 'antisemitic', 'jewish', 'black people',"LGBT", "Gay", "Feminist", "Social problem", "Gay Interest", "Social issues", 'Law & Crime', 'racist',  'rights', 'oppression', 'protest', 'equality', 'revolution']
         # filter dataframe to obtain only movies that have one of this words in the plot 
     social_event_date_df = list_filter(event_date_df, 'plot',social_event_list)
 
@@ -766,35 +804,43 @@ def hist_social_event_date_plots(event_date_df):
     social_country_event_date_df['country'] = social_country_event_date_df['country'].str.split(', ')
     social_country_event_date_df = social_country_event_date_df.explode('country')
 
+    weight_label = None
+    title_normelized = ''
+    if normelized:
+        # add a column weight for the normalization plot
+        add_column_weight(social_country_event_date_df, dict_weight)
+        weight_label = 'weight'
+        title_normelized = 'Normelized '
+
     fig = plt.figure(figsize=(15, 10.4))
-    fig.suptitle('Movie Distribution by Release Date and Country with Social Changes Theme', size = 'x-large', y =0.95)
-    fig.supylabel('# Movies Released', x = 0.05)
+    fig.suptitle(title_normelized +'Movie Distribution by Release Date and Country with Social Changes Theme', size = 'x-large', y =0.95)
+    fig.supylabel(title_normelized + '# Movies Released', x = 0.05)
     fig.supxlabel('Released Date')
 
     plt.subplot(2,3,1)
     # Germany: distribution of film realized over time with social Themes
-    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'Germany')
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'Germany', weights = weight_label)
 
     plt.subplot(2,3,2)
     # United States of America: distribution of film realized over time with social Themes
-    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'United States of America')
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'United States of America', weights = weight_label)
 
     plt.subplot(2,3,3)
     # France: distribution of film realized over time with social Themes
-    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'France')
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'France', weights = weight_label)
 
     plt.subplot(2,3,4)
     # United Kingdom: distribution of film realized over time with social Themes
-    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'United Kingdom') 
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'United Kingdom', weights = weight_label) 
 
     plt.subplot(2,3,5)
     # Italy: distribution of film realized over time with social Themes
-    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'Italy')
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'Italy', weights = weight_label)
 
 
     plt.subplot(2,3,6)
     # West Germany: distribution of film realized over time with social Themes
-    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'West Germany')
+    hist_sub_plot(social_country_event_date_df, 'release_date', 'country', 'West Germany', weights = weight_label)
 
     # est aussi pas mal 
     # plt.subplot(2,3,6)
@@ -877,3 +923,20 @@ def dict_USA_date_weight(movies_clean_df):
     USA_date_df = filter_USA_date(movies_clean_df)
     USA_date_weight_dict = create_dict_weight(USA_date_df, 'release_date')
     return USA_date_weight_dict
+
+def dict_date_plot_weight(movies_clean_df):
+    plot_date_df = filter_per_plot_date(movies_clean_df)
+    plot_date_weight_dict = create_dict_weight(plot_date_df, 'release_date')
+    return plot_date_weight_dict
+
+def dict_date_plot_country_weight(movies_clean_df):
+    plot_date_df = filter_per_plot_date(movies_clean_df)
+    country_plot_date_df = plot_date_df.dropna(subset= ['country'], inplace = False)
+    country_plot_date_weight_dict = create_dict_weight(country_plot_date_df, 'release_date')
+    return country_plot_date_weight_dict
+
+def dict_USA_date_plot_weight(movies_clean_df):
+    USA_date_df = filter_USA_date(movies_clean_df)
+    USA_date_plot_df =USA_date_df.dropna(subset= ['plot'], inplace= False) 
+    USA_date_plot_weight_dict = create_dict_weight(USA_date_plot_df, 'release_date')
+    return USA_date_plot_weight_dict
