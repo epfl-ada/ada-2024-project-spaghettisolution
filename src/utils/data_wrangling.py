@@ -368,7 +368,7 @@ def merge_dates_column(collab_date_df, time_bin = 10, country_list = country_lis
 # build heatmap to see better the results by normalizing also each row
 def normelize_collab_USA_heatmap(merge_collab_date_df):
     # we are not only interested in absolut value but in the variation of number of movies produced also, so let's just normalize each row
-    normelize_merge_collab_date_df = merge_collab_date_df.div(merge_collab_date_df.sum(axis=1), axis=0)
+    normelize_merge_collab_date_df = merge_collab_date_df.div(merge_collab_date_df.sum(axis=0), axis=1)
     plt.figure(figsize=(7, 7))
     sns.heatmap(normelize_merge_collab_date_df, fmt= '.0f', annot = merge_collab_date_df, cbar_kws={'label': 'Normalized # Movies per Country'})
     plt.title("Collaborators with USA : Distribution of Movies per Released Date")
@@ -378,7 +378,7 @@ def normelize_collab_USA_heatmap(merge_collab_date_df):
 
 def plot_heat_map( table_df, title, ylabel, xlabel = 'Released Date', rotation = 90, normelize_mapping = True, cbar_label = 'Normalized # Movies', figsize=(7, 7)):
     if normelize_mapping:
-        mapping_df = table_df.div(table_df.sum(axis=1), axis=0)
+        mapping_df = table_df.div(table_df.sum(axis=0), axis=1)
     else:
         mapping_df = table_df
 
